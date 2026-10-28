@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>暑期实习冲刺 · 每日打卡</title>
+<meta name="theme-color" content="#0f1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="打卡">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#0f1117;--card:#181b24;--card2:#1f2330;--line:#2a2f3d;--text:#e6e8ee;--muted:#8b91a1;
+  --accent:#f97316;--accent2:#fb923c;--green:#22c55e;--blue:#3b82f6;--red:#ef4444;
+  --h0:#232838;--h1:#7c2d12;--h2:#c2410c;--h3:#f97316;--h4:#fdba74;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+h1{font-size:26px;font-weight:800;letter-spacing:.5px}
+h1 span{color:var(--accent)}
+.motto{color:var(--muted);font-size:14px;margin-top:2px}
+.countdown{background:linear-gradient(135deg,#f97316,#c2410c);padding:10px 18px;border-radius:12px;font-size:13px;text-align:right}
+.countdown b{font-size:26px;display:block;line-height:1.15}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat .v{font-size:26px;font-weight:800}
+.stat .v small{font-size:14px;color:var(--muted);font-weight:500}
+.stat .l{color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{padding:10px 18px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;font-weight:600;user-select:none;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);border-color:var(--accent)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.card h2{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1.45fr 1fr;gap:16px;align-items:start}
+.muted{color:var(--muted);font-size:13px}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(249,115,22,.15);color:var(--accent2)}
+.tag.green{background:rgba(34,197,94,.15);color:var(--green)}
+.tag.blue{background:rgba(59,130,246,.15);color:#60a5fa}
+.datebar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.datebar .d{font-size:20px;font-weight:800;margin-right:4px}
+.btn{background:var(--card2);color:var(--text);border:1px solid var(--line);padding:7px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-family:inherit}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.35;cursor:not-allowed;border-color:var(--line)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;padding:12px 22px;font-size:16px}
+.btn.primary:hover{background:#ea580c}
+.btn.rest{background:transparent;border-color:var(--blue);color:#60a5fa;padding:12px 18px;font-size:15px}
+.btn.danger{border-color:var(--red);color:var(--red)}
+.tasks{list-style:none;margin-bottom:18px}
+.tasks li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--card2);border-radius:12px;margin-bottom:8px;border:1px solid transparent;transition:.15s}
+.tasks li.done{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.07)}
+.tasks li.done .tt{text-decoration:line-through;color:var(--muted)}
+.tasks input[type=checkbox]{width:20px;height:20px;accent-color:var(--green);margin-top:2px;cursor:pointer;flex-shrink:0}
+.tasks .tt{font-weight:600}
+.tasks .td{font-size:13px;color:var(--muted)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+.field.full{grid-column:1/-1}
+input[type=number],input[type=text],input[type=password],textarea,select{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:64px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);cursor:pointer;font-size:13px;user-select:none}
+.chip.on{background:rgba(249,115,22,.18);border-color:var(--accent);color:var(--accent2)}
+.moods{display:flex;gap:6px}
+.mood{font-size:24px;padding:4px 8px;border-radius:10px;cursor:pointer;border:1px solid transparent;filter:grayscale(1);opacity:.5;transition:.15s;user-select:none}
+.mood.on{filter:none;opacity:1;border-color:var(--accent);background:rgba(249,115,22,.12)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.status{padding:12px 16px;border-radius:12px;margin-bottom:16px;font-weight:600}
+.status.ok{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.status.restok{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.status.hint{background:rgba(249,115,22,.1);color:var(--accent2);border:1px solid rgba(249,115,22,.25)}
+.focus-title{font-size:18px;font-weight:800;margin:6px 0 4px}
+.kv{margin-top:10px;padding:10px 12px;background:var(--card2);border-radius:10px;font-size:14px}
+.kv b{color:var(--accent2);font-weight:600;display:block;font-size:12px;margin-bottom:2px}
+.bar{height:10px;background:var(--card2);border-radius:999px;overflow:hidden;margin:8px 0 6px;position:relative}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#ea580c,#fdba74);border-radius:999px;transition:width .4s}
+.bar.green i{background:linear-gradient(90deg,#16a34a,#86efac)}
+.quote{font-size:15px;line-height:1.7;color:#f5d0b5}
+/* heatmap */
+.heat-wrap{overflow-x:auto;padding-bottom:6px}
+.heat{display:flex;gap:4px}
+.heat .col{display:flex;flex-direction:column;gap:4px}
+.heat .ml{height:16px;font-size:11px;color:var(--muted);white-space:nowrap}
+.heat .cell{width:16px;height:16px;border-radius:4px;background:var(--h0);cursor:pointer;position:relative}
+.heat .cell.empty{background:transparent;cursor:default}
+.heat .cell.future{opacity:.35;cursor:default}
+.heat .cell.l1{background:var(--h1)}.heat .cell.l2{background:var(--h2)}.heat .cell.l3{background:var(--h3)}.heat .cell.l4{background:var(--h4)}
+.heat .cell.rest{background:#1d4ed8}
+.heat .cell.today{outline:2px solid #fff;outline-offset:1px}
+.heat .wd{display:flex;flex-direction:column;gap:4px;margin-right:4px}
+.heat .wd div{height:16px;font-size:11px;color:var(--muted);line-height:16px}
+.legend{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.legend .cell{width:12px;height:12px;border-radius:3px;display:inline-block}
+/* phases */
+.phase{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.phase:last-child{border:none}
+.phase .dot{width:12px;height:12px;border-radius:50%;background:var(--line);margin-top:6px;flex-shrink:0}
+.phase.cur .dot{background:var(--accent);box-shadow:0 0 0 4px rgba(249,115,22,.2)}
+.phase.past .dot{background:var(--green)}
+.phase .pn{font-weight:700}
+.phase.cur .pn{color:var(--accent2)}
+/* topics */
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.tg{background:var(--card2);border-radius:14px;padding:16px;border:1px solid var(--line)}
+.tg h3{font-size:15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.tg .items{margin-top:10px}
+.tg label{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:14px;cursor:pointer}
+.tg label input{accent-color:var(--green);width:16px;height:16px}
+.tg label.done span{color:var(--muted);text-decoration:line-through}
+.score{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--muted)}
+.score .s{width:24px;height:24px;border-radius:6px;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;font-size:12px;color:var(--muted)}
+.score .s.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.score .s.init{border-color:var(--accent2)}
+/* history */
+.week{background:var(--card2);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.week .wh{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.week .wh b{font-size:15px}
+.week .mini{display:flex;gap:6px;margin-bottom:10px}
+.week .mini div{flex:1;text-align:center;font-size:11px;color:var(--muted)}
+.week .mini span{display:block;height:26px;border-radius:6px;background:var(--h0);margin-bottom:3px;cursor:pointer}
+.week .ws{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:10px}
+.week .ws b{color:var(--text);font-size:15px}
+.daylist{font-size:13px;color:var(--muted);margin-bottom:10px}
+.daylist div{padding:3px 0}
+/* toast & confetti */
+.toast{position:fixed;left:50%;top:30px;transform:translateX(-50%) translateY(-120px);background:var(--card);border:1px solid var(--accent);padding:14px 22px;border-radius:14px;font-weight:700;z-index:100;transition:.35s;box-shadow:0 10px 40px rgba(0,0,0,.5);max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.cf{position:fixed;top:-40px;animation:fall 2.6s ease-in forwards;pointer-events:none;z-index:99}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:30px}
+.sync-badge{display:inline-block;margin-left:8px;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);cursor:pointer}
+.sync-badge.ok{color:var(--green);border-color:rgba(34,197,94,.4)}
+.sync-badge.err{color:var(--red);border-color:rgba(239,68,68,.4)}
+.sync-badge.ing{color:var(--accent2);border-color:rgba(249,115,22,.4)}
+.steps{font-size:14px;margin:0 0 12px 18px}
+.steps li{margin-bottom:4px}
+.steps code{background:var(--card2);padding:1px 6px;border-radius:5px;font-size:13px}
+.steps a{color:var(--accent2)}
+.heat-wrap{position:relative}
+@media(max-width:820px){
+  .wrap{padding:14px 12px 50px}
+  h1{font-size:21px}
+  header{align-items:stretch}
+  .countdown{width:100%;text-align:left;padding:8px 14px}
+  .countdown b{display:inline;font-size:20px;margin:0 4px}
+  .stats{grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{padding:10px 12px}
+  .stat .v{font-size:20px}
+  .stat .l{font-size:11px}
+  .grid2{grid-template-columns:1fr}
+  .form{grid-template-columns:1fr}
+  .card{padding:16px;border-radius:14px}
+  .tab{padding:10px 12px;font-size:14px}
+  .datebar .d{width:100%;font-size:18px}
+  .actions .btn.primary,.actions .btn.rest{flex:1}
+  input[type=number],input[type=text],input[type=password],textarea,select{font-size:16px}
+  .topic-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>暑期实习冲刺 · <span>每日打卡</span></h1>
+      <div class="motto">计算机是饭碗，健身是生活 · 我只需要做好今天这一格<span class="sync-badge" id="syncBadge" title="点击查看同步设置">☁️ 未开启同步</span></div>
+    </div>
+    <div class="countdown">距 3 月暑期实习招聘<b id="cdDays">-</b>天</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="v" id="sStreak">0</div><div class="l">🔥 连续打卡（天）</div></div>
+    <div class="stat"><div class="v" id="sDays">0</div><div class="l">✅ 累计打卡（天）</div></div>
+    <div class="stat"><div class="v" id="sProb">0</div><div class="l">🧮 累计刷题</div></div>
+    <div class="stat"><div class="v" id="sHours">0</div><div class="l">📖 累计学习（小时）</div></div>
+    <div class="stat"><div class="v" id="sGym">0</div><div class="l">🏋️ 健身（次）</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="today">📅 今日打卡</div>
+    <div class="tab" data-tab="progress">📈 进度总览</div>
+    <div class="tab" data-tab="topics">📚 知识点</div>
+    <div class="tab" data-tab="history">🗂️ 每周回顾</div>
+  </div>
+
+  <!-- 今日打卡 -->
+  <section class="panel active" id="p-today">
+    <div class="grid2">
+      <div class="card">
+        <div class="datebar">
+          <span class="d" id="curDate"></span>
+          <button class="btn" id="prevDay">◀ 前一天</button>
+          <button class="btn" id="nextDay">后一天 ▶</button>
+          <button class="btn" id="goToday">回到今天</button>
+        </div>
+        <div id="statusBox"></div>
+        <h2>✅ 今日任务</h2>
+        <ul class="tasks" id="taskList"></ul>
+
+        <h2>📝 今日记录</h2>
+        <div class="form">
+          <div class="field"><label>学习时长（小时）</label><input type="number" id="fHours" min="0" max="16" step="0.5" placeholder="例如 2.5"></div>
+          <div class="field"><label>今日刷题（道）</label><input type="number" id="fProb" min="0" max="50" step="1" placeholder="例如 2"></div>
+          <div class="field full"><label>题号 / 题目</label><input type="text" id="fIds" placeholder="例如 1. 两数之和，49. 字母异位词分组"></div>
+          <div class="field full"><label>健身部位</label><div class="chips" id="gymChips"></div></div>
+          <div class="field full"><label>今天状态</label><div class="moods" id="moods"></div></div>
+          <div class="field full"><label>一句话（今天学到了什么 / 有什么感受）</label><textarea id="fNote" placeholder="随便写点什么，给未来的自己看"></textarea></div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="btnCheck">✅ 完成打卡</button>
+          <button class="btn rest" id="btnRest">😴 休息日打卡</button>
+          <span class="muted" id="saveHint">记录会自动保存</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>🎯 本周重点 <span class="tag" id="phaseTag"></span></h2>
+          <div class="muted" id="weekRange"></div>
+          <div class="focus-title" id="weekFocus"></div>
+          <div class="kv"><b>🛠️ 项目任务</b><span id="weekProject"></span></div>
+          <div class="kv"><b>⏱️ 建议每天学习</b><span id="phaseHours"></span></div>
+        </div>
+        <div class="card">
+          <h2>🧮 算法里程碑</h2>
+          <div id="algoBox"></div>
+        </div>
+        <div class="card">
+          <h2>💬 给自己的话</h2>
+          <div class="quote" id="quote"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 进度总览 -->
+  <section class="panel" id="p-progress">
+    <div class="card">
+      <h2>🗓️ 打卡热力图 <span class="muted">（点击格子可查看 / 补卡）</span></h2>
+      <div class="heat-wrap"><div class="heat" id="heat"></div></div>
+      <div class="legend">
+        <span>未打卡</span><span class="cell" style="background:var(--h0)"></span>
+        <span style="margin-left:8px">学习 &lt;1h</span><span class="cell" style="background:var(--h1)"></span>
+        <span>1~2h</span><span class="cell" style="background:var(--h2)"></span>
+        <span>2~3h</span><span class="cell" style="background:var(--h3)"></span>
+        <span>≥3h</span><span class="cell" style="background:var(--h4)"></span>
+        <span style="margin-left:8px">休息日</span><span class="cell" style="background:#1d4ed8"></span>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>🧭 阶段路线</h2>
+        <div id="phaseList"></div>
+      </div>
+      <div>
+        <div class="card">
+          <h2>🧮 算法总进度</h2>
+          <div id="algoAll"></div>
+        </div>
+        <div class="card">
+          <h2>📚 知识点总进度</h2>
+          <div id="topicAll"></div>
+        </div>
+        <div class="card">
+          <h2>🏅 个人纪录</h2>
+          <div id="records"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 知识点 -->
+  <section class="panel" id="p-topics">
+    <div class="card">
+      <h2>📚 知识点打卡</h2>
+      <div class="muted" style="margin-bottom:14px">学完一个知识点、能用自己的话讲清楚，就打勾。右上角的分数可以随时更新：<b>0</b> 没学过 · <b>1</b> 听过讲不清 · <b>2</b> 能讲大概 · <b>3</b> 能讲清原理（橙色边框是你最初的自评）</div>
+      <div class="topic-grid" id="topicGrid"></div>
+    </div>
+  </section>
+
+  <!-- 每周回顾 -->
+  <section class="panel" id="p-history">
+    <div class="card">
+      <h2>🗂️ 每周回顾 <span class="muted">（每周日晚花 15 分钟写一写）</span></h2>
+      <div id="weekList"></div>
+    </div>
+    <div class="card" id="syncCard">
+      <h2>☁️ 多设备同步 <span class="muted">（电脑和手机数据保持一致）</span></h2>
+      <div id="syncOff">
+        <ol class="steps">
+          <li>打开 <a href="https://github.com/settings/tokens/new?scopes=gist&description=%E6%89%93%E5%8D%A1%E5%90%8C%E6%AD%A5" target="_blank">GitHub 创建 Token 页面</a>（已自动勾选 <code>gist</code> 权限）</li>
+          <li>Expiration（有效期）选 <code>No expiration</code> 或自定义到明年年底</li>
+          <li>拉到最下面点 <code>Generate token</code>，复制 <code>ghp_</code> 开头的那串字符</li>
+          <li>粘贴到下面，点「连接」。<b>每台设备（电脑、手机）都连接一次</b>，用同一个 Token</li>
+        </ol>
+        <div class="actions">
+          <input type="password" id="tokenInput" placeholder="粘贴 GitHub Token（ghp_ 开头）" style="flex:1;min-width:220px">
+          <button class="btn primary" id="btnConnect" style="padding:9px 18px;font-size:14px">连接</button>
+        </div>
+        <div class="muted" style="margin-top:10px">Token 只保存在本设备浏览器里，不会上传。数据存在你自己 GitHub 账号下的一个私密 Gist 中。</div>
+      </div>
+      <div id="syncOn" style="display:none">
+        <div class="status ok" id="syncStatus" style="margin-bottom:12px">已连接</div>
+        <div class="actions">
+          <button class="btn" id="btnSyncNow">🔄 立即同步</button>
+          <button class="btn danger" id="btnDisconnect">断开同步</button>
+        </div>
+        <div class="muted" style="margin-top:10px">修改记录 2 秒后自动上传；每次打开页面、切回页面时自动拉取最新数据。</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>💾 数据管理</h2>
+      <div class="muted" style="margin-bottom:12px">数据保存在当前浏览器里。<b>换浏览器、清理浏览器数据都会丢失</b>，建议每周导出备份一次。</div>
+      <div class="actions">
+        <button class="btn" id="btnExport">⬇️ 导出备份</button>
+        <button class="btn" id="btnImport">⬆️ 导入备份</button>
+        <input type="file" id="fileImport" accept=".json" style="display:none">
+        <button class="btn danger" id="btnReset">🗑️ 清空所有数据</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>坚持就是胜利 · 2026.10.28 → 2027.03.31</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 计划数据 ================= */
+const START = '2026-10-28', END = '2027-03-31', RECRUIT = '2027-03-01';
+
+const PHASES = [
+  {name:'阶段 0 · 恢复期', start:'2026-10-28', end:'2026-11-08', hours:'1 ~ 1.5 小时', desc:'重新找回手感，摸清自己的底子'},
+  {name:'阶段 1 · 基础巩固', start:'2026-11-09', end:'2026-12-20', hours:'2 ~ 3 小时', desc:'Java 基础 / 并发 / JVM / MySQL / Redis 原理'},
+  {name:'阶段 2 · 项目深挖 + 框架', start:'2026-12-21', end:'2027-01-17', hours:'2 ~ 3 小时（考试周减半）', desc:'Spring / SpringBoot / SpringCloud / MQ + 天机学堂亮点'},
+  {name:'阶段 3 · 寒假冲刺', start:'2027-01-18', end:'2027-02-21', hours:'3 ~ 4 小时', desc:'计网 / OS + 简历 + 模拟面试（春节休息一周）'},
+  {name:'阶段 4 · 投递 + 面试', start:'2027-02-22', end:'2027-03-31', hours:'视面试安排', desc:'先保底和主力，再冲刺；每次面试 24 小时内复盘'},
+];
+
+const WEEKS = [
+  {start:'2026-10-28', end:'2026-11-08', focus:'跑通项目 + 填自评表 + 算法起步（数组、哈希、双指针）', project:'用 Docker 跑起天机学堂，过一遍各模块代码'},
+  {start:'2026-11-09', end:'2026-11-15', focus:'Java 基础 + 集合原理速通（HashMap、ConcurrentHashMap）', project:'回项目里找集合的使用场景'},
+  {start:'2026-11-16', end:'2026-11-22', focus:'Java 并发（上）：线程状态、synchronized、volatile、JMM、CAS', project:'看天机学堂里的异步 / 线程池代码'},
+  {start:'2026-11-23', end:'2026-11-29', focus:'Java 并发（下）：ReentrantLock、AQS、线程池、ThreadLocal', project:'看苍穹外卖 ThreadLocal 存当前用户的实现'},
+  {start:'2026-11-30', end:'2026-12-06', focus:'JVM：内存区域、垃圾回收、类加载与双亲委派', project:'画一张天机学堂的整体架构图'},
+  {start:'2026-12-07', end:'2026-12-13', focus:'MySQL 原理：B+ 树索引、事务、MVCC、锁、SQL 优化', project:'用 explain 分析项目里的几条 SQL'},
+  {start:'2026-12-14', end:'2026-12-20', focus:'Redis 原理：底层结构、持久化、缓存三大问题、分布式锁', project:'梳理天机学堂中 Redis 的所有用法'},
+  {start:'2026-12-21', end:'2026-12-27', focus:'Spring：IOC、AOP 动态代理、Bean 生命周期', project:'看懂天机学堂的自定义分布式锁注解（AOP + Redisson）'},
+  {start:'2026-12-28', end:'2027-01-03', focus:'Spring 循环依赖 / 事务失效 + SpringBoot 自动装配', project:'选定 3~4 个亮点，开始写讲述稿'},
+  {start:'2027-01-04', end:'2027-01-10', focus:'SpringCloud 快速复习 + 消息队列（可靠投递、幂等）', project:'深挖优惠券领取：Lua、分布式锁、MQ 异步'},
+  {start:'2027-01-11', end:'2027-01-17', focus:'消息队列（积压、顺序消息）+ 亮点讲述稿定稿', project:'JMeter 压测 + 做一处自己的优化'},
+  {start:'2027-01-18', end:'2027-01-24', focus:'计算机网络：分层模型、TCP 握手挥手、可靠传输、拥塞控制', project:'写简历初稿'},
+  {start:'2027-01-25', end:'2027-01-31', focus:'计网：HTTP / HTTPS、输入 URL 全过程 + 操作系统：进程线程', project:'优化后再压测，记录前后数据'},
+  {start:'2027-02-01', end:'2027-02-04', focus:'操作系统：进程通信、死锁、虚拟内存、IO 多路复用', project:'修改简历'},
+  {start:'2027-02-05', end:'2027-02-12', focus:'🧧 春节休息：陪家人，只健身', project:'好好休息', rest:true},
+  {start:'2027-02-13', end:'2027-02-21', focus:'场景题 + 简历定稿 + 模拟面试 ≥ 3 次', project:'模拟面试，录音回听'},
+  {start:'2027-02-22', end:'2027-03-31', focus:'投递（先保底/主力，再冲刺）+ 面试 + 复盘', project:'每次面试后 24 小时内写复盘'},
+];
+
+const MILESTONES = [
+  {date:'2026-11-08', target:10,  label:'阶段 0 结束'},
+  {date:'2026-12-20', target:60,  label:'阶段 1 结束'},
+  {date:'2027-01-17', target:100, label:'阶段 2 结束'},
+  {date:'2027-02-21', target:130, label:'阶段 3 结束'},
+  {date:'2027-03-31', target:150, label:'投递期'},
+];
+
+const TOPICS = [
+  {k:'java',  name:'Java 基础', init:1, items:['面向对象','String','异常','泛型','反射']},
+  {k:'coll',  name:'Java 集合', init:2, items:['HashMap 源码','ConcurrentHashMap','ArrayList / LinkedList']},
+  {k:'conc',  name:'Java 并发', init:0, items:['线程创建与状态','synchronized','volatile 与 JMM','CAS','ReentrantLock','AQS','线程池（7 参数 + 拒绝策略）','ThreadLocal']},
+  {k:'jvm',   name:'JVM', init:1, items:['内存区域','垃圾回收算法与收集器','类加载与双亲委派']},
+  {k:'mysql', name:'MySQL', init:2, items:['B+ 树索引','事务与隔离级别','MVCC','锁','explain 与 SQL 优化']},
+  {k:'redis', name:'Redis', init:2, items:['数据结构底层','持久化 RDB / AOF','缓存穿透 / 击穿 / 雪崩','分布式锁','主从与哨兵']},
+  {k:'spring',name:'Spring / SpringBoot', init:1, items:['IOC','AOP 动态代理','Bean 生命周期','循环依赖与三级缓存','事务传播与失效场景','自动装配原理','starter 机制']},
+  {k:'cloud', name:'SpringCloud', init:2, items:['注册中心','网关','远程调用','熔断限流']},
+  {k:'mq',    name:'消息队列', init:1, items:['可靠投递','重复消费（幂等）','消息积压','顺序消息']},
+  {k:'net',   name:'计算机网络', init:0, items:['分层模型','TCP 三次握手 / 四次挥手','可靠传输与拥塞控制','TCP vs UDP','HTTP 1.1 / 2 / 3','HTTPS 握手','输入 URL 全过程']},
+  {k:'os',    name:'操作系统', init:0, items:['进程 / 线程 / 协程','进程间通信','死锁','虚拟内存与分页','IO 多路复用 select / poll / epoll']},
+  {k:'proj',  name:'项目 & 求职', init:null, items:['天机学堂跑通','苍穹外卖跑通','亮点 1 讲述稿','亮点 2 讲述稿','亮点 3 讲述稿','JMeter 压测 + 自己的优化','苍穹外卖要点梳理','简历定稿','模拟面试 1','模拟面试 2','模拟面试 3']},
+];
+
+const GYM_PARTS = ['胸','背','腿','肩','手臂','核心','有氧'];
+const MOODS = ['😫','😕','😐','🙂','😄'];
+const QUOTES = [
+  '能拿到 offer 就说明我够格。北京那次没去成是因为距离，不是因为能力。',
+  '不用热爱，只要够用。我做这件事，是为了家里，也是为了我自己。',
+  '状态不好的日子，完成最低线就算赢。健身也不是每天都能破 PR。',
+  '迷茫的时候回来看看：我只需要做好今天这一格。',
+  '肌肉是一组一组练出来的，能力也是一道题一道题刷出来的。',
+  '渐进超负荷：今天比昨天多会一点点，就是进步。',
+  '早点挣钱，让爸妈少累一点。这就是最好的理由。',
+  '不和别人比，只和昨天的自己比。',
+];
+const TOASTS = ['💪 今天这一格，拿下了！','🔥 又离 offer 近了一步！','🏆 自律的人最酷！','⭐ 坚持就是最大的天赋！','🎉 打卡成功，去健身奖励自己吧！'];
+
+/* ================= 工具函数 ================= */
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (s,n) => { const d = parse(s); d.setDate(d.getDate()+n); return fmt(d); };
+const diffDays = (a,b) => Math.round((parse(b)-parse(a))/86400000);
+const todayStr = () => fmt(new Date());
+const WD = ['日','一','二','三','四','五','六'];
+const label = s => { const d = parse(s); return `${d.getMonth()+1}月${d.getDate()}日 周${WD[d.getDay()]}`; };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const mondayOf = s => { const d = parse(s); const w = (d.getDay()+6)%7; d.setDate(d.getDate()-w); return fmt(d); };
+
+/* ================= 状态 ================= */
+const KEY = 'internship-checkin-v1';
+let state = load();
+function load(){
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.records) return fill(s); } catch(e){}
+  return fill({});
+}
+function fill(s){
+  s.records = s.records || {}; s.topics = s.topics || {}; s.reviews = s.reviews || {};
+  s.scores = s.scores || {}; TOPICS.forEach(t => { if (t.init !== null && s.scores[t.k] === undefined) s.scores[t.k] = t.init; });
+  return s;
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); Sync.schedule(); }
+function touch(r){ if (r) r._u = Date.now(); save(); }
+function rec(date){ return state.records[date] || (state.records[date] = {tasks:{}, gym:[], mood:0}); }
+const normRev = v => typeof v === 'string' ? {t:v, u:0} : (v || {t:'', u:0});
+/* 合并两份数据：每天的记录、每周回顾按修改时间取新的；知识点、自评分整体取新的 */
+function mergeState(a, b){
+  const out = fill(JSON.parse(JSON.stringify(a))); b = fill(JSON.parse(JSON.stringify(b)));
+  for (const [d, rb] of Object.entries(b.records)){ const ra = out.records[d]; if (!ra || (rb._u||0) > (ra._u||0)) out.records[d] = rb; }
+  for (const [w, vb] of Object.entries(b.reviews)){ const nb = normRev(vb); if (nb.u > normRev(out.reviews[w]).u) out.reviews[w] = nb; }
+  if ((b.topicsU||0) > (out.topicsU||0)){ out.topics = b.topics; out.topicsU = b.topicsU; }
+  if ((b.scoresU||0) > (out.scoresU||0)){ out.scores = b.scores; out.scoresU = b.scoresU; }
+  return out;
+}
+
+/* ================= 云同步（GitHub Gist） ================= */
+const SKEY = 'internship-checkin-sync', GIST_FILE = 'internship-checkin.json';
+const Sync = {
+  cfg: (() => { try { return JSON.parse(localStorage.getItem(SKEY)) || {}; } catch(e){ return {}; } })(),
+  timer: null, busy: false, pending: false,
+  on(){ return !!(this.cfg.token && this.cfg.gistId); },
+  saveCfg(){ localStorage.setItem(SKEY, JSON.stringify(this.cfg)); },
+  async api(path, opt = {}){
+    const headers = {'Authorization':'Bearer '+this.cfg.token, 'Accept':'application/vnd.github+json'};
+    if (opt.body) headers['Content-Type'] = 'application/json';
+    const res = await fetch('https://api.github.com'+path, {...opt, headers, cache:'no-store'});
+    if (!res.ok){ const e = new Error('HTTP '+res.status); e.status = res.status; throw e; }
+    return res.json();
+  },
+  async connect(token){
+    this.cfg = {token: token.trim()};
+    let gist = null;
+    for (let page = 1; page <= 5 && !gist; page++){
+      const list = await this.api(`/gists?per_page=100&page=${page}`);
+      gist = list.find(g => g.files && g.files[GIST_FILE]);
+      if (list.length < 100) break;
+    }
+    if (!gist) gist = await this.api('/gists', {method:'POST', body: JSON.stringify({
+      description:'暑期实习冲刺 · 打卡数据（自动同步，请勿删除）', public:false,
+      files:{[GIST_FILE]:{content: JSON.stringify(state)}}})});
+    this.cfg.gistId = gist.id; this.saveCfg();
+    await this.sync();
+  },
+  disconnect(){ clearTimeout(this.timer); this.cfg = {}; this.saveCfg(); setBadge(); },
+  async fetchRemote(){
+    const g = await this.api('/gists/'+this.cfg.gistId); const f = g.files && g.files[GIST_FILE];
+    if (!f) return null;
+    let c = f.content; if (f.truncated) c = await (await fetch(f.raw_url, {cache:'no-store'})).text();
+    return c ? JSON.parse(c) : null;
+  },
+  async push(str){ await this.api('/gists/'+this.cfg.gistId, {method:'PATCH', body: JSON.stringify({files:{[GIST_FILE]:{content:str}}})}); },
+  async sync(){
+    if (!this.on()) return;
+    if (this.busy){ this.pending = true; return; }
+    this.busy = true; setBadge('ing');
+    try {
+      const remote = await this.fetchRemote();
+      const before = JSON.stringify(state);
+      const merged = remote ? mergeState(state, remote) : state;
+      const str = JSON.stringify(merged);
+      state = merged; localStorage.setItem(KEY, str);
+      if (!remote || str !== JSON.stringify(fill(remote))) await this.push(str);
+      this.cfg.last = Date.now(); this.saveCfg(); setBadge('ok');
+      if (str !== before) renderAll(true);
+    } catch(e){ setBadge('err', e); }
+    finally { this.busy = false; if (this.pending){ this.pending = false; this.sync(); } }
+  },
+  async overwrite(){ if (!this.on()) return; try { await this.push(JSON.stringify(state)); setBadge('ok'); } catch(e){ setBadge('err', e); } },
+  schedule(){ if (!this.on()) return; clearTimeout(this.timer); setBadge('ing', null, '待上传'); this.timer = setTimeout(() => this.sync(), 2000); },
+};
+function setBadge(st, err, txt){
+  const b = $('syncBadge'); if (!b) return;
+  const on = Sync.on();
+  $('syncOff').style.display = on ? 'none' : ''; $('syncOn').style.display = on ? '' : 'none';
+  if (!on){ b.className = 'sync-badge'; b.textContent = '☁️ 未开启同步'; return; }
+  const last = Sync.cfg.last ? new Date(Sync.cfg.last) : null;
+  const lt = last ? `${pad(last.getMonth()+1)}-${pad(last.getDate())} ${pad(last.getHours())}:${pad(last.getMinutes())}` : '-';
+  if (st === 'ing'){ b.className = 'sync-badge ing'; b.textContent = '⏳ ' + (txt || '同步中'); }
+  else if (st === 'err'){
+    b.className = 'sync-badge err'; b.textContent = '⚠️ 同步失败';
+    const msg = err && err.status === 401 ? 'Token 无效或已过期，请断开后重新连接' : err && err.status === 404 ? '找不到云端数据（Gist 可能被删除），请断开后重新连接' : '网络问题，数据已保存在本地，稍后会自动重试';
+    $('syncStatus').className = 'status hint'; $('syncStatus').textContent = '⚠️ ' + msg;
+    return;
+  }
+  else { b.className = 'sync-badge ok'; b.textContent = '☁️ 已同步 ' + lt.slice(6); }
+  $('syncStatus').className = 'status ok'; $('syncStatus').textContent = `✅ 已连接云同步 · 上次同步：${lt}`;
+}
+const isDone = d => { const r = state.records[d]; return r && (r.status === 'done' || r.status === 'rest'); };
+
+const phaseOf = d => PHASES.findIndex(p => d >= p.start && d <= p.end);
+const weekOf = d => WEEKS.find(w => d >= w.start && d <= w.end);
+
+let curDate = clampDate(todayStr());
+function clampDate(d){ if (d < START) return START; const t = todayStr(); if (d > t) return t < START ? START : t; return d; }
+
+/* ================= 统计 ================= */
+function totals(){
+  let prob=0, hours=0, gym=0, days=0;
+  for (const [d,r] of Object.entries(state.records)){
+    if (!isDone(d)) continue;
+    days++; prob += +r.problems || 0; hours += +r.hours || 0;
+    if ((r.gym && r.gym.length) || (r.tasks && r.tasks.gym)) gym++;
+  }
+  return {prob, hours, gym, days};
+}
+function probUntil(date){ let n=0; for (const [d,r] of Object.entries(state.records)) if (d<=date && isDone(d)) n += +r.problems||0; return n; }
+function streak(){
+  let d = todayStr(); if (!isDone(d)) d = addDays(d,-1);
+  let n = 0; while (isDone(d)) { n++; d = addDays(d,-1); } return n;
+}
+function bestStreak(){
+  const ds = Object.keys(state.records).filter(isDone).sort(); let best=0, cur=0, prev=null;
+  for (const d of ds){ cur = (prev && diffDays(prev,d)===1) ? cur+1 : 1; best = Math.max(best,cur); prev = d; }
+  return best;
+}
+function expectedProb(date){
+  let prevD = START, prevT = 0;
+  for (const m of MILESTONES){
+    if (date <= m.date){ const span = diffDays(prevD, m.date) || 1; return Math.round(prevT + (m.target-prevT)*Math.max(0,diffDays(prevD,date))/span); }
+    prevD = m.date; prevT = m.target;
+  }
+  return MILESTONES[MILESTONES.length-1].target;
+}
+
+function renderStats(){
+  const t = totals();
+  $('sStreak').textContent = streak();
+  $('sDays').textContent = t.days;
+  $('sProb').innerHTML = `${t.prob}<small> / 150</small>`;
+  $('sHours').textContent = +t.hours.toFixed(1);
+  $('sGym').textContent = t.gym;
+  $('cdDays').textContent = Math.max(0, diffDays(todayStr(), RECRUIT));
+}
+
+/* ================= 今日打卡 ================= */
+function renderToday(){
+  const d = curDate, r = rec(d), w = weekOf(d), pi = phaseOf(d), p = PHASES[pi];
+  const isToday = d === todayStr();
+  $('curDate').textContent = label(d) + (isToday ? '（今天）' : '');
+  $('prevDay').disabled = d <= START;
+  $('nextDay').disabled = d >= clampDate(todayStr());
+
+  // 状态
+  const sunday = parse(d).getDay() === 0;
+  let sb = '';
+  if (r.status === 'done') sb = `<div class="status ok">✅ 已打卡（${esc(r.time||'')}）—— 修改记录后可再次点击「完成打卡」更新</div>`;
+  else if (r.status === 'rest') sb = `<div class="status restok">😴 已休息日打卡 —— 休息也是训练的一部分</div>`;
+  else if (w && w.rest) sb = `<div class="status hint">🧧 春节休息周：陪陪家人，可以直接点「休息日打卡」</div>`;
+  else if (sunday) sb = `<div class="status hint">☀️ 今天是周日，计划里的休息日。可以休息日打卡，记得去「每周回顾」写本周总结</div>`;
+  else sb = `<div class="status hint">🎯 最低完成线：至少 <b>1 道题</b> 或 <b>学习 30 分钟</b></div>`;
+  $('statusBox').innerHTML = sb;
+
+  // 任务
+  const tasks = [
+    {k:'s1', t:'📖 学习块 1 · 八股 / 原理', d: w ? w.focus : ''},
+    {k:'s2', t:'🛠️ 学习块 2 · 项目', d: w ? w.project : ''},
+    {k:'algo', t:'🧮 刷题 1~2 道', d:'做不出来看题解，看懂后自己重新敲一遍'},
+    {k:'gym', t:'🏋️ 健身', d:'学完再去，当作奖励'},
+    {k:'log', t:'📝 写今日记录', d:'睡前 3 分钟，像写训练日志一样'},
+  ];
+  $('taskList').innerHTML = tasks.map(x => `
+    <li class="${r.tasks[x.k]?'done':''}">
+      <input type="checkbox" data-k="${x.k}" ${r.tasks[x.k]?'checked':''}>
+      <div><div class="tt">${x.t}</div><div class="td">${esc(x.d)}</div></div>
+    </li>`).join('');
+  $('taskList').querySelectorAll('input').forEach(cb => cb.onchange = () => {
+    const r = rec(curDate);
+    r.tasks[cb.dataset.k] = cb.checked; cb.closest('li').classList.toggle('done', cb.checked); touch(r); renderStats();
+  });
+
+  // 表单
+  $('fHours').value = r.hours ?? ''; $('fProb').value = r.problems ?? '';
+  $('fIds').value = r.ids ?? ''; $('fNote').value = r.note ?? '';
+  $('gymChips').innerHTML = GYM_PARTS.map(g => `<span class="chip ${r.gym.includes(g)?'on':''}" data-g="${g}">${g}</span>`).join('');
+  $('gymChips').querySelectorAll('.chip').forEach(c => c.onclick = () => {
+    const r = rec(curDate); r.gym = r.gym || [];
+    const g = c.dataset.g; const i = r.gym.indexOf(g); if (i>=0) r.gym.splice(i,1); else r.gym.push(g);
+    c.classList.toggle('on'); touch(r); renderStats();
+  });
+  $('moods').innerHTML = MOODS.map((m,i) => `<span class="mood ${r.mood===i+1?'on':''}" data-m="${i+1}" title="${i+1} 分">${m}</span>`).join('');
+  $('moods').querySelectorAll('.mood').forEach(el => el.onclick = () => {
+    const r = rec(curDate);
+    r.mood = +el.dataset.m; $('moods').querySelectorAll('.mood').forEach(x => x.classList.toggle('on', x===el)); touch(r);
+  });
+
+  // 右侧
+  $('phaseTag').textContent = p ? p.name.split(' · ')[0] : '';
+  $('weekRange').textContent = w ? `${label(w.start)} — ${label(w.end)}` : '';
+  $('weekFocus').textContent = w ? w.focus : '';
+  $('weekProject').textContent = w ? w.project : '';
+  $('phaseHours').textContent = p ? `${p.hours}　健身照常 1.5~2 小时` : '';
+  renderAlgoBox();
+  $('quote').textContent = QUOTES[diffDays(START, d) % QUOTES.length];
+}
+
+function renderAlgoBox(){
+  const d = curDate, have = probUntil(d);
+  const m = MILESTONES.find(x => x.date >= d) || MILESTONES[MILESTONES.length-1];
+  const exp = expectedProb(d), pct = Math.min(100, have/m.target*100);
+  const gap = have - exp;
+  $('algoBox').innerHTML = `
+    <div class="muted">下一个目标：<b style="color:var(--text)">${label(m.date)}</b> 前累计 <b style="color:var(--accent2)">${m.target}</b> 题（${m.label}）</div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <div style="display:flex;justify-content:space-between;font-size:14px">
+      <span>已刷 <b>${have}</b> / ${m.target}</span>
+      <span class="${gap>=0?'tag green':'tag'}">${gap>=0 ? `领先计划 ${gap} 题` : `按计划应到 ${exp} 题，差 ${-gap} 题`}</span>
+    </div>`;
+}
+
+function bindForm(){
+  const map = {fHours:'hours', fProb:'problems', fIds:'ids', fNote:'note'};
+  for (const [id,key] of Object.entries(map)){
+    $(id).addEventListener('input', () => {
+      const r = rec(curDate); const v = $(id).value;
+      r[key] = (key==='hours'||key==='problems') ? (v===''? undefined : Math.max(0, +v)) : v;
+      if (key==='problems' && +v>0 && !r.tasks.algo){ r.tasks.algo = true; renderTaskTick('algo'); }
+      touch(r); renderStats(); renderAlgoBox();
+      $('saveHint').textContent = '已自动保存 ✓'; clearTimeout(bindForm.t); bindForm.t = setTimeout(()=>$('saveHint').textContent='记录会自动保存',1500);
+    });
+  }
+  $('btnCheck').onclick = () => checkin('done');
+  $('btnRest').onclick = () => checkin('rest');
+  $('prevDay').onclick = () => { curDate = clampDate(addDays(curDate,-1)); renderToday(); };
+  $('nextDay').onclick = () => { curDate = clampDate(addDays(curDate,1)); renderToday(); };
+  $('goToday').onclick = () => { curDate = clampDate(todayStr()); renderToday(); };
+}
+function renderTaskTick(k){ const cb = $('taskList').querySelector(`input[data-k="${k}"]`); if (cb){ cb.checked = true; cb.closest('li').classList.add('done'); } }
+
+function checkin(type){
+  const r = rec(curDate);
+  if (type === 'done'){
+    const ok = (+r.problems||0) >= 1 || (+r.hours||0) >= 0.5;
+    if (!ok && !confirm('还没达到最低完成线（至少 1 道题或学习 30 分钟）。\n\n确定要打卡吗？\n（也可以先填写上面的学习时长和刷题数）')) return;
+    r.tasks.log = true;
+  }
+  const first = !isDone(curDate);
+  r.status = type;
+  const now = new Date(); r.time = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  touch(r); renderAll();
+  if (type === 'done'){ toast(first ? TOASTS[Math.floor(Math.random()*TOASTS.length)] : '✏️ 记录已更新'); if (first) confetti(); }
+  else toast('😴 休息日打卡成功，好好恢复！');
+}
+
+/* ================= 进度总览 ================= */
+function renderHeat(){
+  const t = todayStr(); let html = '<div class="wd"><div></div>' + ['一','','三','','五','','日'].map(x=>`<div>${x}</div>`).join('') + '</div>';
+  let wk = mondayOf(START); let lastMonth = -1;
+  while (wk <= END){
+    const m = parse(wk).getMonth(); let ml = '';
+    for (let i=0;i<7;i++){ const dd = parse(addDays(wk,i)); if (dd.getDate()===1 || (lastMonth===-1 && i===0)) { if (dd.getMonth()!==lastMonth){ ml = (dd.getMonth()+1)+'月'; lastMonth = dd.getMonth(); } } }
+    html += `<div class="col"><div class="ml">${ml}</div>`;
+    for (let i=0;i<7;i++){
+      const d = addDays(wk,i);
+      if (d < START || d > END){ html += '<div class="cell empty"></div>'; continue; }
+      const r = state.records[d]; let cls = '';
+      if (d > t) cls = 'future';
+      else if (r && r.status === 'rest') cls = 'rest';
+      else if (r && r.status === 'done'){ const h = +r.hours||0; cls = h<1?'l1':h<2?'l2':h<3?'l3':'l4'; }
+      if (d === t) cls += ' today';
+      const tip = `${label(d)}${r&&r.status==='done'?` · 学习 ${r.hours||0}h · 刷题 ${r.problems||0} 道`:r&&r.status==='rest'?' · 休息日':''}`;
+      html += `<div class="cell ${cls}" data-d="${d}" title="${tip}"></div>`;
+    }
+    html += '</div>'; wk = addDays(wk,7);
+  }
+  $('heat').innerHTML = html;
+  const tc = $('heat').querySelector('.cell.today'), hw = $('heat').parentElement;
+  if (tc) hw.scrollLeft = Math.max(0, tc.offsetLeft - hw.clientWidth/2);
+  $('heat').querySelectorAll('.cell[data-d]').forEach(c => c.onclick = () => {
+    const d = c.dataset.d; if (d > todayStr()) return; curDate = d; switchTab('today'); renderToday();
+  });
+}
+
+function renderProgress(){
+  renderHeat();
+  const t = todayStr(), cp = phaseOf(t);
+  $('phaseList').innerHTML = PHASES.map((p,i) => {
+    const cls = t > p.end ? 'past' : i === cp ? 'cur' : '';
+    let extra = '';
+    if (i === cp){ const tot = diffDays(p.start,p.end)+1, gone = diffDays(p.start,t)+1; extra = `<div class="bar green"><i style="width:${gone/tot*100}%"></i></div><div class="muted">本阶段第 ${gone} / ${tot} 天</div>`; }
+    return `<div class="phase ${cls}"><div class="dot"></div><div style="flex:1"><div class="pn">${p.name} ${t>p.end?'✅':''}</div><div class="muted">${label(p.start)} — ${label(p.end)} · 每天 ${p.hours}</div><div style="font-size:14px">${p.desc}</div>${extra}</div></div>`;
+  }).join('');
+
+  const have = probUntil(t);
+  $('algoAll').innerHTML = MILESTONES.map(m => {
+    const pct = Math.min(100, have/m.target*100), done = have >= m.target;
+    return `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${label(m.date)} · ${m.label}</span><span>${done?'✅ ':''}${Math.min(have,m.target)} / ${m.target}</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  }).join('');
+
+  let all=0, dn=0; TOPICS.forEach(tp => tp.items.forEach((_,i) => { all++; if (state.topics[tp.k+'.'+i]) dn++; }));
+  $('topicAll').innerHTML = `<div class="bar green"><i style="width:${dn/all*100}%"></i></div><div style="font-size:14px">已掌握 <b>${dn}</b> / ${all} 个知识点（${Math.round(dn/all*100)}%）</div>`;
+
+  const ts = totals(); const rs = Object.entries(state.records).filter(([d])=>isDone(d));
+  const maxH = rs.reduce((m,[,r])=>Math.max(m,+r.hours||0),0), maxP = rs.reduce((m,[,r])=>Math.max(m,+r.problems||0),0);
+  const moods = rs.map(([,r])=>r.mood).filter(Boolean); const avgM = moods.length ? (moods.reduce((a,b)=>a+b,0)/moods.length).toFixed(1) : '-';
+  $('records').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px">
+    <div class="kv"><b>最长连续打卡</b>${bestStreak()} 天</div>
+    <div class="kv"><b>单日最长学习</b>${maxH} 小时</div>
+    <div class="kv"><b>单日最多刷题</b>${maxP} 道</div>
+    <div class="kv"><b>平均状态</b>${avgM} / 5</div></div>`;
+}
+
+/* ================= 知识点 ================= */
+function renderTopics(){
+  $('topicGrid').innerHTML = TOPICS.map(tp => {
+    const n = tp.items.length, dn = tp.items.filter((_,i)=>state.topics[tp.k+'.'+i]).length;
+    const score = tp.init===null ? '' : `<div class="score">${[0,1,2,3].map(s=>`<span class="s ${state.scores[tp.k]===s?'on':''} ${tp.init===s?'init':''}" data-k="${tp.k}" data-s="${s}">${s}</span>`).join('')}</div>`;
+    return `<div class="tg"><h3><span>${tp.name}</span>${score}</h3>
+      <div class="muted">${dn} / ${n}</div><div class="bar green"><i style="width:${dn/n*100}%"></i></div>
+      <div class="items">${tp.items.map((it,i)=>{const on = !!state.topics[tp.k+'.'+i]; return `<label class="${on?'done':''}"><input type="checkbox" data-t="${tp.k}.${i}" ${on?'checked':''}><span>${it}</span></label>`;}).join('')}</div></div>`;
+  }).join('');
+  $('topicGrid').querySelectorAll('input[data-t]').forEach(cb => cb.onchange = () => {
+    if (cb.checked) state.topics[cb.dataset.t] = todayStr(); else delete state.topics[cb.dataset.t];
+    state.topicsU = Date.now(); save(); renderTopics(); if (cb.checked) toast('📚 又掌握一个知识点！');
+  });
+  $('topicGrid').querySelectorAll('.score .s').forEach(el => el.onclick = () => {
+    const k = el.dataset.k, s = +el.dataset.s, tp = TOPICS.find(x=>x.k===k);
+    state.scores[k] = s; state.scoresU = Date.now(); save(); renderTopics();
+    if (s > tp.init) toast(`🚀 ${tp.name}：${tp.init} 分 → ${s} 分，进步了！`);
+  });
+}
+
+/* ================= 每周回顾 ================= */
+function renderHistory(){
+  const t = todayStr(); let wk = mondayOf(t); const first = mondayOf(START); let html = '';
+  while (wk >= first){
+    const days = [...Array(7)].map((_,i)=>addDays(wk,i));
+    let dn=0, pr=0, hr=0, gy=0; const ms=[]; const lines=[];
+    days.forEach(d => { const r = state.records[d]; if (!isDone(d)) return; dn++; pr+=+r.problems||0; hr+=+r.hours||0; if (r.gym&&r.gym.length||r.tasks&&r.tasks.gym) gy++; if (r.mood) ms.push(r.mood);
+      if (r.status==='done' || r.note) lines.push(`<div>${label(d)} ${r.status==='rest'?'😴 休息':`· ${r.hours||0}h · ${r.problems||0} 题`}${r.gym&&r.gym.length?' · 🏋️ '+esc(r.gym.join('/')):''}${r.mood?' · '+MOODS[r.mood-1]:''}${r.note?' · '+esc(r.note):''}</div>`); });
+    const mini = days.map(d => { const r = state.records[d]; let bg='var(--h0)';
+      if (d<START||d>t) bg='transparent;border:1px dashed var(--line)'; else if (r&&r.status==='rest') bg='#1d4ed8'; else if (r&&r.status==='done'){ const h=+r.hours||0; bg = h<1?'var(--h1)':h<2?'var(--h2)':h<3?'var(--h3)':'var(--h4)'; }
+      return `<div><span style="background:${bg}" data-d="${d}"></span>周${WD[parse(d).getDay()]}</div>`; }).join('');
+    const avg = ms.length ? (ms.reduce((a,b)=>a+b,0)/ms.length) : 0;
+    html += `<div class="week">
+      <div class="wh"><b>${label(wk)} — ${label(days[6])}</b>${wk===mondayOf(t)?'<span class="tag">本周</span>':''}</div>
+      <div class="mini">${mini}</div>
+      <div class="ws"><span>打卡 <b>${dn}</b>/7 天</span><span>刷题 <b>${pr}</b> 道</span><span>学习 <b>${+hr.toFixed(1)}</b> 小时</span><span>健身 <b>${gy}</b> 次</span><span>平均状态 <b>${avg?MOODS[Math.round(avg)-1]:'-'}</b></span></div>
+      ${lines.length?`<div class="daylist">${lines.join('')}</div>`:''}
+      <textarea data-w="${wk}" placeholder="本周最大的收获？下周要调整什么？">${esc(normRev(state.reviews[wk]).t)}</textarea>
+    </div>`;
+    wk = addDays(wk,-7);
+  }
+  $('weekList').innerHTML = html;
+  $('weekList').querySelectorAll('textarea[data-w]').forEach(ta => ta.oninput = () => { state.reviews[ta.dataset.w] = {t: ta.value, u: Date.now()}; save(); });
+  $('weekList').querySelectorAll('.mini span[data-d]').forEach(s => s.onclick = () => { const d = s.dataset.d; if (d<START||d>todayStr()) return; curDate = d; switchTab('today'); renderToday(); });
+}
+
+/* ================= 数据管理 ================= */
+$('btnExport').onclick = () => {
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `打卡备份_${todayStr()}.json`; a.click();
+  toast('⬇️ 备份已导出');
+};
+$('btnImport').onclick = () => $('fileImport').click();
+$('fileImport').onchange = e => {
+  const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
+  rd.onload = () => { try { const s = JSON.parse(rd.result); if (!s.records) throw 0; if (!confirm('导入会覆盖当前所有数据，确定吗？')) return; state = fill(s); save(); renderAll(); toast('⬆️ 导入成功'); } catch(err){ alert('文件格式不对，导入失败'); } };
+  rd.readAsText(f); e.target.value = '';
+};
+$('btnReset').onclick = () => {
+  if (!confirm('确定清空所有打卡数据吗？此操作无法撤销！\n建议先导出备份。')) return;
+  if (!confirm('再确认一次：真的要清空吗？')) return;
+  localStorage.removeItem(KEY); state = fill({}); localStorage.setItem(KEY, JSON.stringify(state)); Sync.overwrite(); renderAll(); toast('已清空');
+};
+
+/* 同步按钮 */
+$('syncBadge').onclick = () => { switchTab('history'); $('syncCard').scrollIntoView({behavior:'smooth'}); };
+$('btnConnect').onclick = async () => {
+  const tk = $('tokenInput').value.trim(); if (!tk) return alert('请先粘贴 Token');
+  $('btnConnect').disabled = true; $('btnConnect').textContent = '连接中...';
+  try { await Sync.connect(tk); $('tokenInput').value = ''; setBadge('ok'); toast('☁️ 同步已开启！'); }
+  catch(e){ Sync.cfg = {}; Sync.saveCfg(); setBadge(); alert(e.status === 401 ? 'Token 无效，请检查是否复制完整、是否勾选了 gist 权限' : '连接失败：' + e.message + '\n请检查网络后重试'); }
+  finally { $('btnConnect').disabled = false; $('btnConnect').textContent = '连接'; }
+};
+$('btnSyncNow').onclick = () => Sync.sync();
+$('btnDisconnect').onclick = () => { if (confirm('断开后本设备不再同步（本地和云端数据都会保留）。确定吗？')) { Sync.disconnect(); toast('已断开同步'); } };
+
+/* ================= 通用 ================= */
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>t.classList.remove('show'), 2200); }
+function confetti(){
+  const em = ['💪','🔥','⭐','🎉','🏆','✨'];
+  for (let i=0;i<40;i++){ const s = document.createElement('span'); s.className='cf'; s.textContent = em[i%em.length];
+    s.style.left = Math.random()*100+'vw'; s.style.animationDelay = Math.random()*0.7+'s'; s.style.fontSize = (16+Math.random()*20)+'px';
+    document.body.appendChild(s); setTimeout(()=>s.remove(), 3500); }
+}
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab===name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id==='p-'+name));
+  if (name==='progress') renderProgress(); if (name==='topics') renderTopics(); if (name==='history') renderHistory();
+}
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
+function renderAll(fromSync){
+  renderStats();
+  const ae = document.activeElement;
+  const typing = fromSync && ae && ['INPUT','TEXTAREA'].includes(ae.tagName);
+  if (!typing) renderToday();
+  const active = document.querySelector('.tab.active').dataset.tab;
+  if (active==='progress') renderProgress(); if (active==='topics') renderTopics(); if (active==='history' && !typing) renderHistory();
+}
+bindForm(); renderAll(); setBadge(Sync.cfg.last ? 'ok' : undefined);
+if (Sync.on()) Sync.sync();
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible'){ curDate = clampDate(curDate); Sync.sync(); renderStats(); } });
+window.addEventListener('online', () => Sync.sync());
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
