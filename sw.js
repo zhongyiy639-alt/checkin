@@ -1,5 +1,5 @@
 // 离线缓存：优先走网络（保证拿到最新版本），断网时用缓存
-const CACHE = 'checkin-v1';
+const CACHE = 'checkin-v2';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

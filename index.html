@@ -27,7 +27,7 @@ h1 span{color:var(--accent)}
 .motto{color:var(--muted);font-size:14px;margin-top:2px}
 .countdown{background:linear-gradient(135deg,#f97316,#c2410c);padding:10px 18px;border-radius:12px;font-size:13px;text-align:right}
 .countdown b{font-size:26px;display:block;line-height:1.15}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
 .stat .v{font-size:26px;font-weight:800}
 .stat .v small{font-size:14px;color:var(--muted);font-weight:500}
@@ -181,6 +181,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:30px}
     <div class="stat"><div class="v" id="sDays">0</div><div class="l">✅ 累计打卡（天）</div></div>
     <div class="stat"><div class="v" id="sProb">0</div><div class="l">🧮 累计刷题</div></div>
     <div class="stat"><div class="v" id="sHours">0</div><div class="l">📖 累计学习（小时）</div></div>
+    <div class="stat"><div class="v" id="sEng">0</div><div class="l">🔤 英语（天）</div></div>
     <div class="stat"><div class="v" id="sGym">0</div><div class="l">🏋️ 健身（次）</div></div>
   </div>
 
@@ -210,6 +211,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:30px}
           <div class="field"><label>学习时长（小时）</label><input type="number" id="fHours" min="0" max="16" step="0.5" placeholder="例如 2.5"></div>
           <div class="field"><label>今日刷题（道）</label><input type="number" id="fProb" min="0" max="50" step="1" placeholder="例如 2"></div>
           <div class="field full"><label>题号 / 题目</label><input type="text" id="fIds" placeholder="例如 1. 两数之和，49. 字母异位词分组"></div>
+          <div class="field full"><label>英语微习惯（20~30 分钟，填了自动勾选英语任务）</label><input type="text" id="fEng" placeholder="例如 背六级词 30 个 + BBC 6 Minute English 1 期"></div>
           <div class="field full"><label>健身部位</label><div class="chips" id="gymChips"></div></div>
           <div class="field full"><label>今天状态</label><div class="moods" id="moods"></div></div>
           <div class="field full"><label>一句话（今天学到了什么 / 有什么感受）</label><textarea id="fNote" placeholder="随便写点什么，给未来的自己看"></textarea></div>
@@ -361,7 +363,7 @@ const WEEKS = [
   {start:'2027-02-01', end:'2027-02-04', focus:'操作系统：进程通信、死锁、虚拟内存、IO 多路复用', project:'修改简历'},
   {start:'2027-02-05', end:'2027-02-12', focus:'🧧 春节休息：陪家人，只健身', project:'好好休息', rest:true},
   {start:'2027-02-13', end:'2027-02-21', focus:'场景题 + 简历定稿 + 模拟面试 ≥ 3 次', project:'模拟面试，录音回听'},
-  {start:'2027-02-22', end:'2027-03-31', focus:'投递（先保底/主力，再冲刺）+ 面试 + 复盘', project:'每次面试后 24 小时内写复盘'},
+  {start:'2027-02-22', end:'2027-03-31', focus:'双线投递（大城市中厂/车企/外企 + 一线及河南央国企兜底）+ 复盘', project:'每次面试后 24 小时内写复盘'},
 ];
 
 const MILESTONES = [
@@ -384,6 +386,7 @@ const TOPICS = [
   {k:'mq',    name:'消息队列', init:1, items:['可靠投递','重复消费（幂等）','消息积压','顺序消息']},
   {k:'net',   name:'计算机网络', init:0, items:['分层模型','TCP 三次握手 / 四次挥手','可靠传输与拥塞控制','TCP vs UDP','HTTP 1.1 / 2 / 3','HTTPS 握手','输入 URL 全过程']},
   {k:'os',    name:'操作系统', init:0, items:['进程 / 线程 / 协程','进程间通信','死锁','虚拟内存与分页','IO 多路复用 select / poll / epoll']},
+  {k:'eng',   name:'英语底牌（六级 → 雅思）', init:2, items:['六级高频核心词一轮','BBC 6 Minute English 满 20 期','六级听力真题 10 套','六级阅读真题 10 套','2027.06 拿下六级（CET-6）','雅思核心词书开启','剑桥雅思精听 10 篇']},
   {k:'proj',  name:'项目 & 求职', init:null, items:['天机学堂跑通','苍穹外卖跑通','亮点 1 讲述稿','亮点 2 讲述稿','亮点 3 讲述稿','JMeter 压测 + 自己的优化','苍穹外卖要点梳理','简历定稿','模拟面试 1','模拟面试 2','模拟面试 3']},
 ];
 
@@ -522,13 +525,14 @@ function clampDate(d){ if (d < START) return START; const t = todayStr(); if (d 
 
 /* ================= 统计 ================= */
 function totals(){
-  let prob=0, hours=0, gym=0, days=0;
+  let prob=0, hours=0, gym=0, eng=0, days=0;
   for (const [d,r] of Object.entries(state.records)){
     if (!isDone(d)) continue;
     days++; prob += +r.problems || 0; hours += +r.hours || 0;
     if ((r.gym && r.gym.length) || (r.tasks && r.tasks.gym)) gym++;
+    if ((r.engNote && r.engNote.trim()) || (r.tasks && r.tasks.eng)) eng++;
   }
-  return {prob, hours, gym, days};
+  return {prob, hours, gym, eng, days};
 }
 function probUntil(date){ let n=0; for (const [d,r] of Object.entries(state.records)) if (d<=date && isDone(d)) n += +r.problems||0; return n; }
 function streak(){
@@ -555,6 +559,7 @@ function renderStats(){
   $('sDays').textContent = t.days;
   $('sProb').innerHTML = `${t.prob}<small> / 150</small>`;
   $('sHours').textContent = +t.hours.toFixed(1);
+  $('sEng').textContent = t.eng;
   $('sGym').textContent = t.gym;
   $('cdDays').textContent = Math.max(0, diffDays(todayStr(), RECRUIT));
 }
@@ -579,10 +584,11 @@ function renderToday(){
 
   // 任务
   const tasks = [
+    {k:'eng', t:'🔤 英语微习惯（20~30 分钟）', d:'碎片背 25~30 个六级/雅思词 + 10 分钟听力（BBC 6 Minute / 真题）'},
     {k:'s1', t:'📖 学习块 1 · 八股 / 原理', d: w ? w.focus : ''},
     {k:'s2', t:'🛠️ 学习块 2 · 项目', d: w ? w.project : ''},
     {k:'algo', t:'🧮 刷题 1~2 道', d:'做不出来看题解，看懂后自己重新敲一遍'},
-    {k:'gym', t:'🏋️ 健身', d:'学完再去，当作奖励'},
+    {k:'gym', t:'🏋️ 健身', d:'学完再去，当作奖励；路上/热身可顺便听英语'},
     {k:'log', t:'📝 写今日记录', d:'睡前 3 分钟，像写训练日志一样'},
   ];
   $('taskList').innerHTML = tasks.map(x => `
@@ -597,7 +603,7 @@ function renderToday(){
 
   // 表单
   $('fHours').value = r.hours ?? ''; $('fProb').value = r.problems ?? '';
-  $('fIds').value = r.ids ?? ''; $('fNote').value = r.note ?? '';
+  $('fIds').value = r.ids ?? ''; $('fEng').value = r.engNote ?? ''; $('fNote').value = r.note ?? '';
   $('gymChips').innerHTML = GYM_PARTS.map(g => `<span class="chip ${r.gym.includes(g)?'on':''}" data-g="${g}">${g}</span>`).join('');
   $('gymChips').querySelectorAll('.chip').forEach(c => c.onclick = () => {
     const r = rec(curDate); r.gym = r.gym || [];
@@ -635,12 +641,13 @@ function renderAlgoBox(){
 }
 
 function bindForm(){
-  const map = {fHours:'hours', fProb:'problems', fIds:'ids', fNote:'note'};
+  const map = {fHours:'hours', fProb:'problems', fIds:'ids', fEng:'engNote', fNote:'note'};
   for (const [id,key] of Object.entries(map)){
     $(id).addEventListener('input', () => {
       const r = rec(curDate); const v = $(id).value;
       r[key] = (key==='hours'||key==='problems') ? (v===''? undefined : Math.max(0, +v)) : v;
       if (key==='problems' && +v>0 && !r.tasks.algo){ r.tasks.algo = true; renderTaskTick('algo'); }
+      if (key==='engNote' && v.trim() && !r.tasks.eng){ r.tasks.eng = true; renderTaskTick('eng'); }
       touch(r); renderStats(); renderAlgoBox();
       $('saveHint').textContent = '已自动保存 ✓'; clearTimeout(bindForm.t); bindForm.t = setTimeout(()=>$('saveHint').textContent='记录会自动保存',1500);
     });
@@ -751,9 +758,9 @@ function renderHistory(){
   const t = todayStr(); let wk = mondayOf(t); const first = mondayOf(START); let html = '';
   while (wk >= first){
     const days = [...Array(7)].map((_,i)=>addDays(wk,i));
-    let dn=0, pr=0, hr=0, gy=0; const ms=[]; const lines=[];
-    days.forEach(d => { const r = state.records[d]; if (!isDone(d)) return; dn++; pr+=+r.problems||0; hr+=+r.hours||0; if (r.gym&&r.gym.length||r.tasks&&r.tasks.gym) gy++; if (r.mood) ms.push(r.mood);
-      if (r.status==='done' || r.note) lines.push(`<div>${label(d)} ${r.status==='rest'?'😴 休息':`· ${r.hours||0}h · ${r.problems||0} 题`}${r.gym&&r.gym.length?' · 🏋️ '+esc(r.gym.join('/')):''}${r.mood?' · '+MOODS[r.mood-1]:''}${r.note?' · '+esc(r.note):''}</div>`); });
+    let dn=0, pr=0, hr=0, gy=0, eg=0; const ms=[]; const lines=[];
+    days.forEach(d => { const r = state.records[d]; if (!isDone(d)) return; dn++; pr+=+r.problems||0; hr+=+r.hours||0; if (r.gym&&r.gym.length||r.tasks&&r.tasks.gym) gy++; if ((r.engNote&&r.engNote.trim())||(r.tasks&&r.tasks.eng)) eg++; if (r.mood) ms.push(r.mood);
+      if (r.status==='done' || r.note) lines.push(`<div>${label(d)} ${r.status==='rest'?'😴 休息':`· ${r.hours||0}h · ${r.problems||0} 题`}${(r.engNote&&r.engNote.trim())?' · 🔤 '+esc(r.engNote):(r.tasks&&r.tasks.eng?' · 🔤 英语':'')}${r.gym&&r.gym.length?' · 🏋️ '+esc(r.gym.join('/')):''}${r.mood?' · '+MOODS[r.mood-1]:''}${r.note?' · '+esc(r.note):''}</div>`); });
     const mini = days.map(d => { const r = state.records[d]; let bg='var(--h0)';
       if (d<START||d>t) bg='transparent;border:1px dashed var(--line)'; else if (r&&r.status==='rest') bg='#1d4ed8'; else if (r&&r.status==='done'){ const h=+r.hours||0; bg = h<1?'var(--h1)':h<2?'var(--h2)':h<3?'var(--h3)':'var(--h4)'; }
       return `<div><span style="background:${bg}" data-d="${d}"></span>周${WD[parse(d).getDay()]}</div>`; }).join('');
@@ -761,7 +768,7 @@ function renderHistory(){
     html += `<div class="week">
       <div class="wh"><b>${label(wk)} — ${label(days[6])}</b>${wk===mondayOf(t)?'<span class="tag">本周</span>':''}</div>
       <div class="mini">${mini}</div>
-      <div class="ws"><span>打卡 <b>${dn}</b>/7 天</span><span>刷题 <b>${pr}</b> 道</span><span>学习 <b>${+hr.toFixed(1)}</b> 小时</span><span>健身 <b>${gy}</b> 次</span><span>平均状态 <b>${avg?MOODS[Math.round(avg)-1]:'-'}</b></span></div>
+      <div class="ws"><span>打卡 <b>${dn}</b>/7 天</span><span>刷题 <b>${pr}</b> 道</span><span>学习 <b>${+hr.toFixed(1)}</b> 小时</span><span>英语 <b>${eg}</b> 天</span><span>健身 <b>${gy}</b> 次</span><span>平均状态 <b>${avg?MOODS[Math.round(avg)-1]:'-'}</b></span></div>
       ${lines.length?`<div class="daylist">${lines.join('')}</div>`:''}
       <textarea data-w="${wk}" placeholder="本周最大的收获？下周要调整什么？">${esc(normRev(state.reviews[wk]).t)}</textarea>
     </div>`;
